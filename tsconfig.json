@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "lib": [ "es6" ],
+    "target": "es6",
+    "outDir": "target/",
+    "module": "commonjs",
+    "noImplicitReturns": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "removeComments": true,
+    "noUnusedLocals": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [ "src/*" ],
+      "@config/*": [ "config/*" ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "config/**/*.ts",
+    "script/**/*.ts",
+    "main.ts"
+  ],
+  "exclude": [
+    "target",
+    "node_modules"
+  ]
+}

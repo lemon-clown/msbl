@@ -66,7 +66,7 @@ class Replacer {
       .join('\n')
 
     const packageRegex = new RegExp(`package\\s+${source.packageName}\\s*;\\s*`)
-    const replace = `package ${target.packageName};\n\n${importString}\n\n\n`
+    const replace = `\s*package ${target.packageName};\n\n${importString}\n\n\n`
     this.targetSource = this.targetSource.replace(packageRegex, replace)
   }
 

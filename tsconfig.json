@@ -24,8 +24,7 @@
     "src/**/*.ts",
     "test/**/*.ts",
     "config/**/*.ts",
-    "script/**/*.ts",
-    "main.ts"
+    "script/**/*.ts"
   ],
   "exclude": [
     "target",

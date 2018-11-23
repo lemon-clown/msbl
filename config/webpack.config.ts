@@ -1,5 +1,6 @@
-import { paths } from './paths'
 import webpack from 'webpack'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import { paths } from './paths'
 
 
 export default {
@@ -32,7 +33,18 @@ export default {
       banner: '#! /usr/bin/env node',
       raw: true
     }),
+    new CopyWebpackPlugin([
+      {
+        from: paths.appSrcConfig,
+        to: paths.appTargetConfig,
+        toType: 'file',
+      },
+    ]),
   ],
+  node: {
+    __filename: false,
+    __dirname: false,
+  },
   mode: 'production',
   target: 'node',
   externals: paths.appExternals,

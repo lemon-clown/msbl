@@ -9,10 +9,12 @@ const resolvePath = (...relativePath: string[]) => path.resolve(appDirectory, ..
 export const paths = {
   appRoot: appDirectory,
   appSrc: resolvePath('src'),
-  appMain: resolvePath("main.ts"),
+  appMain: resolvePath('src', 'main.ts'),
   appTarget: resolvePath('target'),
   appManifest: resolvePath('package.json'),
   appNodeModules: resolvePath('node_modules'),
+  appSrcConfig: resolvePath('src', 'config', 'config.yml'),
+  appTargetConfig: resolvePath('target', 'config.yml'),
   appExternals: getExternals(),
 }
 

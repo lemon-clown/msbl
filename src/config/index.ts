@@ -2,8 +2,9 @@ import fs from 'fs-extra'
 import path from 'path'
 import yaml from 'js-yaml'
 import { isFile } from '@/util/fs-util'
-import { BadOptionException } from '@/util/exception'
+import { DefaultGenerateConfig, RawPartialGenerateConfig } from './generate'
 import { DefaultGlobalConfig, RawPartialGlobalConfig } from './global'
+import { BadOptionException } from '@/util/exception'
 
 
 const absoluteLocaleConfigPath = path.join(__dirname, 'config.yml')
@@ -16,6 +17,7 @@ const localRawConfig = yaml.safeLoad(localConfigContent)
  */
 export interface RawPartialConfig {
   global: RawPartialGlobalConfig
+  generate: RawPartialGenerateConfig
 }
 
 
@@ -48,4 +50,12 @@ export const getPartialRawConfig = async (projectDirectory: string,
 export const getDefaultGlobalConfig = (partialRawConfig?: RawPartialGlobalConfig): DefaultGlobalConfig => {
   const rawConfig = { ...localRawConfig }
   return new DefaultGlobalConfig(rawConfig.global, partialRawConfig)
+}
+
+/**
+ * 获取子命令 'generate' 的默认选项
+ */
+export const getDefaultGenerateConfig = (partialRawConfig?: RawPartialGenerateConfig): DefaultGenerateConfig => {
+  const rawConfig = { ...localRawConfig }
+  return new DefaultGenerateConfig(rawConfig.generate, partialRawConfig)
 }

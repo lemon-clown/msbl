@@ -2,3 +2,20 @@ global:
   encoding: UTF-8
   indent: '    '
   max-line-size: 120
+
+# default options to sub-command 'generate'
+generate:
+  # 当 service.path 已经存在时，是否强行删除，然后覆盖
+  force: false
+  service:
+    suffix: ServiceBase
+
+  # 数组对象
+  # 每个元素值有：
+  #   - path
+  #   - prefix
+  #   - suffix
+  # 若指定了多个 mapper，则所有去掉前后缀后名称相同的 Mapper 将合并到一个 ServiceBase 中去
+  mappers:
+    prefix: ''
+    suffix: ServiceBase

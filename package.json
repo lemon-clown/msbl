@@ -1,6 +1,6 @@
 {
   "name": "msbl",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Mapper - Service - ServiceBase - ServiceImpl ",
   "bin": {
     "msbl": "target/main.js"

@@ -12,23 +12,32 @@
 可以发现，base 中的所有内容完全可以使用脚本通过解析 mapper 包中的类而自动生成，而在 service 中的修改则是仅需修改一次，而以后 mapper 修改后，直接运行脚本覆盖掉 base 中的内容就好了。
 
 ## 举个栗子
+<span id="id-example-1"></span>
+省略了 `import 语句`。
 ```java
 // CatMapper
-package clown.lemon.demo.dao;
+package me.clown.lemon.demo.dao.ibatis;
 
 public interface CatMapper {
+    int deleteByPrimaryKey(Integer id);
+}
+```
+
+```java
+// CustomCatMapper
+package me.clown.lemon.demo.dao.custom;
+
+public interface CustomCatMapper {
     Cat getCatById(Integer catId);
 }
 ```
 
 ```java
 // CatService
-package clown.lemon.demo.web.service;
+package me.clown.lemon.demo.web.service;
 
-import clown.lemon.demo.dao.CatMapper;
-
-public interface CatService extends CatMapper {
-    int deleteCatByCatId(Integer catId);
+public interface CatService extends CatMapper, CustomCatMapper {
+    int updateCat(Cat cat);
 }
 ```
 
@@ -36,22 +45,27 @@ public interface CatService extends CatMapper {
 // CatServiceBase
 package clown.lemon.demo.web.service.base;
 
-import clown.lemon.demo.dao.CatMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-
-public class CatServiceBase implements CatMapper {
+@Component
+public class CatServiceBase implements CatMapper, CustomCatMapper {
     @Autowired
     private CatMapper catMapper;
+    
+    @Autowired
+    private CustomCatMapper customCatMapper;
+
+	  int deleteByPrimaryKey(Integer id) {
+      return catMapper.deleteByPrimaryKey(id);
+	  }
 
     @Override
     Cat getCatById(Integer catId) {
-        return catMapper.getCatById(catId);
+        return customCatMapper.getCatById(catId);
     }
 }
 ```
 
 ```java
-// CatServiceBase
+// CatServiceImpl
 package clown.lemon.demo.web.service.impl;
 
 import clown.lemon.demo.dao.CatMapper;
@@ -60,12 +74,14 @@ import clown.lemon.demo.web.service.CatService;
 
 public class CatServiceImpl extends CatServiceBase implements CatService {
     @Override
-    int deleteCatByCatId(Integer catId) {
-        System.out.println("delete cat " + catId + ".");
+    int updateCat(Cat cat) {
+        System.out.println("update cat " + cat.getId + ".");
         return 0;
     }
 }
 ```
+
+如果现在需要在删除操作时同时写入一个日志，就可以直接在 `CatServiceImpl` 中重载 `int deleteByPrimaryKey(Integer id)` 方法，其它调用的地方无需做改动。
 
 # 安装
 ```shell
@@ -77,12 +93,53 @@ yarn global add msbl
 ```
 
 # 使用
-```shell
-msbl <from> <to> -s <source-class-suffix> -t <target-class-suffix>
+注意：**msbl v1.x.y** 用法不和 **v0.a.b** 兼容。
+
+## 配置文件
+需要指定一个配置文件，默认执行命令所在的路径下的 msbl.config.yml（当然也可以通过命令行选项指定文件路径，但必须是 `yaml` 文件）
+
+下面是 `msbl.config.yml` 的简要说明（对应 [上文中的栗子](#id-example-1)）：
+```yml
+# 全局选项
+global:
+  encoding: UTF-8
+
+# 子命令 generate 的配置
+generate:
+  # 覆盖文件操作等，是否需要等待用户确认，若未 true，则无需确认
+  force: false
+
+  # ServiceBase 相关的配置
+  service:
+    # ServiceBase 生成时放置的文件夹
+    path: src/main/java/me/clown/lemon/demo/service/base
+    # ServiceBase 所在的包
+    package: me.clown.lemon.demo.service.base
+    # 生成的 ServiceBase 的后缀名
+    suffix: ServiceBase
+
+  # mapper 相关的配置，类似 ServiceBase 配置，字段含义不再赘述。
+  # 由于可能需要多个 mapper 由一个 serviceBase 代理，因此，每个 mapper 还需要额外配置 `prefix`，
+  # 当一个 mapper 去掉 prefix 和 suffix 后，将被 'group'，同一个 'group' 中的 mapper，将由
+  # 同一个 ServiceBase 所代理，如上文中的 CatService 和 CustomCatMapper 由 CatServiceBase 所代理
+  mappers:
+    -
+      path: src/main/java/me/clown/lemon/demo/dao/ibatis
+      package: me.clown.lemon.demo.dao.ibatis
+      suffix: Mapper
+    -
+      path: src/main/java/me/clown/lemon/demo/dao/custom
+      package: me.clown.lemon.demo.dao.custom
+      prefix: Custom
+      suffix: Mapper
 ```
 
-## 参数说明
-* from: mapper 所在的文件夹路径
-* to: service/manager 所在的文件件路径
-* -s: 指定 mapper 的后缀名，通常被指定为 `Mapper`、`Dao` 等，默认为 from 的最后一段路径的首字母大写的值
-* -t: 指定 service 的后缀名，通常被指定为 `Service`、`Manager` 等，默认为 to 的最后一段路径的首字母大写的值
+## 命令
+```shell
+msbl genereate [-c <config-path>] [-e <encoding>] [--force]
+```
+
+### 参数说明
+* -c：指定配置文件所在的路径
+* -e：指定项目中的源码文件的编码方式
+* -f：由于可能多次执行，因此会碰到需要 overwrite 文件的情况，如果指定 `force`，则无需用户确认“是否执行覆盖”

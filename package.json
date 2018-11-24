@@ -1,0 +1,39 @@
+{
+  "name": "msbl",
+  "version": "1.0.0",
+  "description": "Mapper - Service - ServiceBase - ServiceImpl ",
+  "bin": {
+    "msbl": "target/main.js"
+  },
+  "scripts": {
+    "build": "ts-node -r tsconfig-paths/register script/build.ts"
+  },
+  "repository": "git@github.com:lemon-clown/msbl.git",
+  "author": "lemon clown",
+  "license": "MIT",
+  "keywords": [
+    "typescript",
+    "cli"
+  ],
+  "devDependencies": {
+    "@types/copy-webpack-plugin": "^4.4.2",
+    "@types/ora": "^1.3.4",
+    "@types/webpack": "^4.4.19",
+    "chalk": "^2.4.1",
+    "copy-webpack-plugin": "^4.6.0",
+    "ora": "^3.0.0",
+    "ts-loader": "^5.3.0",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths": "^3.7.0",
+    "typescript": "^3.1.6",
+    "webpack": "^4.26.0"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^5.0.4",
+    "@types/js-yaml": "^3.11.2",
+    "@types/node": "^10.12.9",
+    "commander": "^2.19.0",
+    "fs-extra": "^7.0.1",
+    "js-yaml": "^3.12.0"
+  }
+}

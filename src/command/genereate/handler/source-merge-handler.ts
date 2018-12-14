@@ -4,6 +4,7 @@ import { toLowerCamelCase } from '@/util/string-util'
 interface SourceMergeHandlerConfig {
   readonly indent: string
   readonly maxLineSize: number
+  readonly component: boolean
 }
 
 export class SourceMergeHandler {
@@ -29,7 +30,7 @@ export class SourceMergeHandler {
     const importItems: string[] = this.collectImportItems()
     const classBodies: string[] = this.collectClassBodies()
     const { servicePackageName, mapperNames, serviceName } = this
-    const { indent } = this.config
+    const { indent, component } = this.config
 
     let classCreateStatement: string = `public class ${serviceName} implements ${mapperNames.join(', ')} {`
     if (classCreateStatement.length > this.config.maxLineSize) {
@@ -42,7 +43,7 @@ export class SourceMergeHandler {
       + ` * proxy for:\n`
       + this.mapperNames.map(mapperName => ` *   - {@link ${mapperName}}\n`).join('')
       + ` */\n`
-      + `@Component\n`
+      + (component ? `@Component\n` : '')
       + classCreateStatement + '\n'
       + mapperNames.map(mapperName => {
           const mapperInstance = toLowerCamelCase(mapperName)

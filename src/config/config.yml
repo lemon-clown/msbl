@@ -2,6 +2,7 @@ global:
   encoding: UTF-8
   indent: '    '
   max-line-size: 120
+  component: false
 
 # default options to sub-command 'generate'
 generate:

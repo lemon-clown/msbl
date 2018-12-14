@@ -10,6 +10,7 @@ export interface GlobalConfig {
   readonly encoding: string
   readonly indent: string
   readonly maxLineSize: number
+  readonly component: boolean
   readonly executeDirectory: string
   readonly projectDirectory: string
 }
@@ -52,11 +53,12 @@ export default (program: commander.Command) => {
   async function getGlobalConfig(): Promise<GlobalConfig> {
     const executeDirectory = path.resolve()
     const projectDirectory = program.project? path.resolve(executeDirectory, program.project): executeDirectory
-    const { encoding, indent, maxLineSize } = getDefaultGlobalConfig()
+    const { encoding, indent, maxLineSize, component } = getDefaultGlobalConfig()
     return {
       encoding: coverString(encoding, program.encoding),
       indent,
       maxLineSize,
+      component,
       executeDirectory,
       projectDirectory,
     }

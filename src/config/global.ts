@@ -1,4 +1,4 @@
-import { coverString } from '@/util/option-util'
+import { coverBoolean, coverString } from '@/util/option-util'
 
 
 /**
@@ -11,6 +11,7 @@ export interface RawDefaultGlobalConfig {
   readonly encoding: string
   readonly indent: string
   readonly 'max-line-size': number
+  readonly component: boolean
 }
 
 
@@ -25,15 +26,17 @@ export class DefaultGlobalConfig {
   public readonly encoding: string
   public readonly indent: string
   public readonly maxLineSize: number
+  public readonly component: boolean
 
   public constructor(rawConfig: RawDefaultGlobalConfig,
                      partialRawConfig?: RawPartialGlobalConfig) {
-    const { encoding, indent, 'max-line-size': maxLineSize } = rawConfig
-    const { encoding: pEncoding, indent: pIndent, 'max-line-size': pMaxLineSize } = partialRawConfig || {} as RawPartialGlobalConfig
+    const { encoding, indent, 'max-line-size': maxLineSize, component } = rawConfig
+    const { encoding: pEncoding, indent: pIndent, 'max-line-size': pMaxLineSize, component: pComponent } = partialRawConfig || {} as RawPartialGlobalConfig
 
     this.encoding = coverString(encoding, pEncoding)
     this.indent = coverString(indent, pIndent)
     this.maxLineSize = pMaxLineSize != null? pMaxLineSize: maxLineSize
+    this.component = coverBoolean(component, pComponent)
   }
 }
 

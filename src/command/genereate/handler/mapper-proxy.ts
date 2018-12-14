@@ -5,6 +5,7 @@ import { JavaClassItem, JavaSourceItem } from './types'
 interface MapperProxyConfig {
   readonly indent: string
   readonly maxLineSize: number
+  readonly component: boolean
 }
 
 export class MapperProxy {
@@ -56,8 +57,10 @@ export class MapperProxy {
     })
 
     importItems.add('org.springframework.beans.factory.annotation.Autowired')
-    importItems.add('org.springframework.stereotype.Component')
     importItems.add(`${mapper.packageName}.${mapper.className}`)
+
+    // add org.springframework.stereotype.Component
+    if (this.config.component) importItems.add('org.springframework.stereotype.Component')
 
     // remove org.springframework.stereotype.Repository
     importItems.delete('org.springframework.stereotype.Repository')
@@ -82,12 +85,12 @@ export class MapperProxy {
     const regex = new RegExp(`(?:@[\\w$]+\\s*(?:\\([\\s\\S]*?\\))?)*public\\s+interface\\s+${mapper.className}\\s*(?:extends\\s*([\\s\\S]+?))?{`)
     const replace = (match: string, p1: string): string => {
       p1 = p1 == null? '': `, ${p1.trim()}`
-      const { indent } = this.config
+      const { indent, component } = this.config
       return `/**\n * auto-generated.\n`
         + ` * proxy for:\n`
         + ` *   - {@link ${mapper.className}}\n`
         + ` */\n`
-        + `@Component\n`
+        + (component ? `@Component\n` : '')
         + `public class ${service.className} implements ${mapper.className}${p1} {\n`
         + `${indent}@Autowired\n`
         + `${indent}private ${mapper.className} ${mapperInstance};\n`
